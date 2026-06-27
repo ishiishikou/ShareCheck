@@ -4,6 +4,7 @@ import Photos
 struct ContentView: View {
     @EnvironmentObject private var store: ShareCheckStore
     @StateObject private var photoService = PhotoLibraryService()
+    private var isUITesting: Bool { ProcessInfo.processInfo.arguments.contains("--ui-testing") }
 
     var body: some View {
         TabView {
@@ -15,10 +16,12 @@ struct ContentView: View {
                 .tabItem { Label("設定", systemImage: "gearshape") }
         }
         .task {
+            guard !isUITesting else { return }
             await photoService.requestAuthorizationIfNeeded()
             photoService.loadItems(startDate: store.managementStartDate, store: store)
         }
         .onChange(of: store.statuses) { _, _ in
+            guard !isUITesting else { return }
             photoService.loadItems(startDate: store.managementStartDate, store: store)
         }
     }
