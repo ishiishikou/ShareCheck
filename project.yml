@@ -50,6 +50,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ShareCheckUITests
         GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: ShareCheck
 schemes:
   ShareCheck:
     build:
