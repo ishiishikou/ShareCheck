@@ -1,5 +1,6 @@
 import SwiftUI
 import Photos
+import UIKit
 
 struct ContentView: View {
     @EnvironmentObject private var store: ShareCheckStore
@@ -351,7 +352,7 @@ struct ThumbnailView: View {
     private func loadThumbnail(for asset: PHAsset) async -> UIImage? {
         await withCheckedContinuation { continuation in
             let options = PHImageRequestOptions()
-            options.deliveryMode = .opportunistic
+            options.deliveryMode = .highQualityFormat
             options.resizeMode = .fast
             options.isNetworkAccessAllowed = true
             PHImageManager.default().requestImage(
