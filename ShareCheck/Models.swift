@@ -7,28 +7,17 @@ enum MediaStatus: String, Codable {
     case reviewed
 }
 
-struct MediaItem: Identifiable {
+struct MediaItem: Identifiable, Hashable {
     let asset: PHAsset
-
     var id: String { asset.localIdentifier }
-
-    var creationDate: Date {
-        asset.creationDate ?? .distantPast
-    }
-
-    var isVideo: Bool {
-        asset.mediaType == .video
-    }
+    var creationDate: Date { asset.creationDate ?? .distantPast }
 }
 
 struct OperationSnapshot: Codable {
     var sharedIds: [String]
     var reviewedIds: [String]
     var createdAt: Date
-
-    var isEmpty: Bool {
-        sharedIds.isEmpty && reviewedIds.isEmpty
-    }
+    var isEmpty: Bool { sharedIds.isEmpty && reviewedIds.isEmpty }
 }
 
 struct DashboardCounts: Equatable {
@@ -37,6 +26,5 @@ struct DashboardCounts: Equatable {
     var yesterday: Int
     var thisWeek: Int
     var older: Int
-
     static let empty = DashboardCounts(total: 0, today: 0, yesterday: 0, thisWeek: 0, older: 0)
 }

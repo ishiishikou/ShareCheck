@@ -23,6 +23,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ShareCheck
         INFOPLIST_FILE: ShareCheck/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
 
   ShareCheckTests:
     type: bundle.unit-test

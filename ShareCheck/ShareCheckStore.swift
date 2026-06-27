@@ -1,4 +1,3 @@
-import Combine
 import Foundation
 
 @MainActor
@@ -18,35 +17,21 @@ final class ShareCheckStore: ObservableObject {
         if UserDefaults.standard.object(forKey: startDateKey) == nil {
             UserDefaults.standard.set(Date(), forKey: startDateKey)
         }
-
-        if let data = UserDefaults.standard.data(forKey: statusesKey),
-           let decoded = try? JSONDecoder().decode([String: MediaStatus].self, from: data) {
+        if let data = UserDefaults.standard.data(forKey: statusesKey), let decoded = try? JSONDecoder().decode([String: MediaStatus].self, from: data) {
             statuses = decoded
         }
-
-        if let data = UserDefaults.standard.data(forKey: latestOperationKey),
-           let decoded = try? JSONDecoder().decode(OperationSnapshot.self, from: data) {
+        if let data = UserDefaults.standard.data(forKey: latestOperationKey), let decoded = try? JSONDecoder().decode(OperationSnapshot.self, from: data) {
             latestOperation = decoded
         }
-
         skipSharedConfirmation = UserDefaults.standard.bool(forKey: skipSharedKey)
         skipReviewedConfirmation = UserDefaults.standard.bool(forKey: skipReviewedKey)
     }
 
-    var managementStartDate: Date {
-        UserDefaults.standard.object(forKey: startDateKey) as? Date ?? Date()
-    }
-
-    func status(for id: String) -> MediaStatus {
-        statuses[id] ?? .pending
-    }
+    var managementStartDate: Date { UserDefaults.standard.object(forKey: startDateKey) as? Date ?? Date() }
+    func status(for id: String) -> MediaStatus { statuses[id] ?? .pending }
 
     func mark(sharedIds: [String], reviewedIds: [String]) {
-        latestOperation = MediaStatusStoreLogic.mark(
-            statuses: &statuses,
-            sharedIds: sharedIds,
-            reviewedIds: reviewedIds
-        )
+        latestOperation = MediaStatusStoreLogic.mark(statuses: &statuses, sharedIds: sharedIds, reviewedIds: reviewedIds)
         persist()
     }
 
@@ -74,12 +59,8 @@ final class ShareCheckStore: ObservableObject {
     }
 
     private func persist() {
-        if let data = try? JSONEncoder().encode(statuses) {
-            UserDefaults.standard.set(data, forKey: statusesKey)
-        }
-
-        if let latestOperation,
-           let data = try? JSONEncoder().encode(latestOperation) {
+        if let data = try? JSONEncoder().encode(statuses) { UserDefaults.standard.set(data, forKey: statusesKey) }
+        if let latestOperation, let data = try? JSONEncoder().encode(latestOperation) {
             UserDefaults.standard.set(data, forKey: latestOperationKey)
         } else {
             UserDefaults.standard.removeObject(forKey: latestOperationKey)
