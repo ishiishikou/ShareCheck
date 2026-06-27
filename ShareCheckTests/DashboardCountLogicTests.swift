@@ -53,10 +53,6 @@ final class DashboardCountLogicTests: XCTestCase {
     func testMakeCountsReturnsEmptyForNoDates() {
         let counts = DashboardCountLogic.makeCounts(dates: [])
 
-        XCTAssertEqual(counts.total, 0)
-        XCTAssertEqual(counts.today, 0)
-        XCTAssertEqual(counts.yesterday, 0)
-        XCTAssertEqual(counts.thisWeek, 0)
-        XCTAssertEqual(counts.older, 0)
+        XCTAssertEqual(counts, .empty)
     }
 }

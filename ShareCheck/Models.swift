@@ -7,7 +7,7 @@ enum MediaStatus: String, Codable {
     case reviewed
 }
 
-struct MediaItem: Identifiable, Hashable {
+struct MediaItem: Identifiable {
     let asset: PHAsset
 
     var id: String { asset.localIdentifier }
