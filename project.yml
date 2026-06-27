@@ -22,7 +22,11 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ShareCheck
-        INFOPLIST_FILE: ShareCheck/Info.plist
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: ShareCheck
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription: ShareCheck needs access to your photo library to show unprocessed photos and videos.
+        INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription: ShareCheck uses the standard share sheet when you share photos.
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
 
   ShareCheckTests:
