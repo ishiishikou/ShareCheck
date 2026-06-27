@@ -48,10 +48,14 @@ struct DashboardCountLogic {
         var thisWeek = 0
         var older = 0
 
+        let todayStart = calendar.startOfDay(for: now)
+        let yesterdayStart = calendar.date(byAdding: .day, value: -1, to: todayStart) ?? todayStart
+
         for date in dates {
-            if calendar.isDateInToday(date) {
+            let dayStart = calendar.startOfDay(for: date)
+            if dayStart == todayStart {
                 today += 1
-            } else if calendar.isDateInYesterday(date) {
+            } else if dayStart == yesterdayStart {
                 yesterday += 1
             } else if calendar.isDate(date, equalTo: now, toGranularity: .weekOfYear) {
                 thisWeek += 1
