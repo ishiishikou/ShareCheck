@@ -15,24 +15,8 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
       - name: Show destinations
-        run: |
-          xcodebuild \
-            -project ShareCheck.xcodeproj \
-            -scheme ShareCheck \
-            -showdestinations
+        run: xcodebuild -project ShareCheck.xcodeproj -scheme ShareCheck -showdestinations
       - name: Build
-        run: |
-          xcodebuild \
-            -project ShareCheck.xcodeproj \
-            -scheme ShareCheck \
-            -configuration Debug \
-            -sdk iphonesimulator \
-            CODE_SIGNING_ALLOWED=NO \
-            build
+        run: xcodebuild -project ShareCheck.xcodeproj -scheme ShareCheck -configuration Debug -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO build
       - name: Test
-        run: |
-          xcodebuild test \
-            -project ShareCheck.xcodeproj \
-            -scheme ShareCheck \
-            -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO
+        run: xcodebuild test -project ShareCheck.xcodeproj -scheme ShareCheck -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' CODE_SIGNING_ALLOWED=NO
