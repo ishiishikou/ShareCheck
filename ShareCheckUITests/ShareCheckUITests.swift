@@ -2,8 +2,9 @@ import XCTest
 
 final class ShareCheckUITests: XCTestCase {
     func testAppLaunches() {
-        let app = XCUIApplication()
-        app.launch()
-        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 5))
+        let application = XCUIApplication()
+        application.launchArguments = ["--ui-testing"]
+        application.launch()
+        XCTAssertTrue(application.tabBars.firstMatch.waitForExistence(timeout: 5))
     }
 }
