@@ -24,3 +24,40 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ShareCheck
         INFOPLIST_FILE: ShareCheck/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+  ShareCheckTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - ShareCheckTests
+    dependencies:
+      - target: ShareCheck
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.ShareCheckTests
+        GENERATE_INFOPLIST_FILE: YES
+
+  ShareCheckUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - ShareCheckUITests
+    dependencies:
+      - target: ShareCheck
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.ShareCheckUITests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  ShareCheck:
+    build:
+      targets:
+        ShareCheck: all
+        ShareCheckTests: [test]
+        ShareCheckUITests: [test]
+    test:
+      targets:
+        - ShareCheckTests
+        - ShareCheckUITests

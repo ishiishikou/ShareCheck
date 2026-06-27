@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -25,3 +25,10 @@ jobs:
             -sdk iphonesimulator \
             CODE_SIGNING_ALLOWED=NO \
             build
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project ShareCheck.xcodeproj \
+            -scheme ShareCheck \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            CODE_SIGNING_ALLOWED=NO
