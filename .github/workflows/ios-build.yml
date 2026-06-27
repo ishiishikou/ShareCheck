@@ -16,6 +16,12 @@ jobs:
         run: brew install xcodegen
       - name: Generate Xcode project
         run: xcodegen generate
+      - name: Show destinations
+        run: |
+          xcodebuild \
+            -project ShareCheck.xcodeproj \
+            -scheme ShareCheck \
+            -showdestinations
       - name: Build
         run: |
           xcodebuild \
@@ -30,5 +36,5 @@ jobs:
           xcodebuild test \
             -project ShareCheck.xcodeproj \
             -scheme ShareCheck \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO
