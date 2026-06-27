@@ -1,6 +1,6 @@
 # ShareCheck
 
-ShareCheck is an iPhone app concept for reducing missed family photo sharing.
+ShareCheck is an iPhone app for reducing missed family photo sharing.
 
 It keeps a lightweight local ledger of photos and videos that have been shared or reviewed, without replacing the iOS Photos app.
 
@@ -14,3 +14,15 @@ It keeps a lightweight local ledger of photos and videos that have been shared o
 - Keep the latest operation available for one-step undo.
 
 See [docs/spec.md](docs/spec.md) for the MVP specification.
+
+## Build
+
+This repository uses XcodeGen so the `.xcodeproj` does not need to be committed.
+
+```bash
+brew install xcodegen
+xcodegen generate
+xcodebuild -project ShareCheck.xcodeproj -scheme ShareCheck -configuration Debug -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO build
+```
+
+GitHub Actions runs the same build on macOS.

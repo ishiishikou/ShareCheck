@@ -1,0 +1,32 @@
+name: ShareCheck
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "17.0"
+settings:
+  base:
+    SWIFT_VERSION: 5.0
+    DEVELOPMENT_TEAM: ""
+targets:
+  ShareCheck:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - ShareCheck
+    resources:
+      - ShareCheck/Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.ShareCheck
+        INFOPLIST_FILE: ShareCheck/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    info:
+      path: ShareCheck/Info.plist
+      properties:
+        CFBundleDisplayName: ShareCheck
+        UILaunchScreen: {}
+        NSPhotoLibraryUsageDescription: ShareCheck needs access to your photo library to show unprocessed photos and videos.
+        NSPhotoLibraryAddUsageDescription: ShareCheck uses the standard share sheet when you share photos.
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
