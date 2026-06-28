@@ -13,6 +13,7 @@ Current repository visibility: **public**.
 - [x] Strengthen `.gitignore` for local files, secrets, signing assets, logs, and AI scratch files
 - [x] Add issue templates for bug reports and feature requests
 - [x] Add manual TestFlight distribution workflow documentation
+- [x] Add CODEOWNERS entries for workflow and release-sensitive files
 
 ## Still recommended after publication
 
@@ -32,24 +33,26 @@ trufflehog git file://. --only-verified
 
 If either scanner reports a real secret, rotate the secret first. Then remove or rewrite the exposed history as needed.
 
-### 2. Check GitHub repository secrets
+### 2. Check GitHub repository and environment secrets
 
 Secret values cannot be retrieved, but names should be reviewed:
 
 ```bash
 gh secret list -R ishiishikou/ShareCheck
+gh secret list -R ishiishikou/ShareCheck --env testflight
 ```
 
 Remove unused secrets. Ensure no secret value is duplicated in workflow files, README, docs, issues, pull requests, or Actions logs.
 
-For TestFlight delivery, only store the signing and App Store Connect values as GitHub Actions secrets. Do not commit `.p12`, `.mobileprovision`, `.p8`, IPA, archive, or export output files.
+For TestFlight delivery, store signing and App Store Connect values as `testflight` environment secrets. Do not commit `.p12`, `.mobileprovision`, `.p8`, IPA, archive, or export output files.
 
 Required TestFlight secrets are listed in `docs/testflight-github-actions.md`.
 
-### 3. Check Actions permissions
+### 3. Check Actions permissions and environment protection
 
 ```bash
 gh api repos/ishiishikou/ShareCheck/actions/permissions
+gh api repos/ishiishikou/ShareCheck/environments/testflight
 ```
 
 Recommended setting for a public repository:
@@ -58,6 +61,8 @@ Recommended setting for a public repository:
 - Avoid automatic deploy or release workflows until credentials are reviewed
 - Keep release and TestFlight workflows manual-only unless automatic delivery is explicitly reviewed
 - Merge the TestFlight workflow into the default branch before expecting it to appear in the Actions UI
+- Configure the `testflight` environment with required reviewers before adding signing secrets
+- Enable branch protection for `main` and require CODEOWNERS review for workflow and release-sensitive configuration changes
 
 ### 4. Review public-visible metadata
 
@@ -89,6 +94,5 @@ These require repository settings access and cannot be fully completed by file e
 - Add repository topics: `ios`, `swift`, `swiftui`, `photos`, `xcodegen`, `family`, `photo-library`
 - Add screenshots or a short demo GIF without personal photos
 - Enable private vulnerability reporting
-- Add branch protection for `main`
 - Enable Dependabot if package dependencies are added later
 - Configure GitHub Sponsors and add `.github/FUNDING.yml` after the sponsor account is confirmed
