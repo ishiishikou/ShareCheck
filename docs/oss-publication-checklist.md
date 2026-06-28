@@ -44,6 +44,8 @@ Remove unused secrets. Ensure no secret value is duplicated in workflow files, R
 
 For TestFlight delivery, only store the signing and App Store Connect values as GitHub Actions secrets. Do not commit `.p12`, `.mobileprovision`, `.p8`, IPA, archive, or export output files.
 
+Required TestFlight secrets are listed in `docs/testflight-github-actions.md`.
+
 ### 3. Check Actions permissions
 
 ```bash
