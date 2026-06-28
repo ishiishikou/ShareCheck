@@ -118,6 +118,10 @@ The workflow only uploads the build. TestFlight processing, compliance questions
 
 Because this workflow is introduced in a pull request branch, it may not appear in the GitHub Actions UI until the PR is merged into the default branch. After merging, open the Actions tab and select `TestFlight Distribution`.
 
+## Merge order
+
+For the first release setup, merge this workflow after the required GitHub Actions secrets and Apple Developer assets are ready. If the workflow is merged before the secrets are configured, it is still safe because it only runs manually and fails early when required values are missing.
+
 ## Security notes
 
 - Do not commit certificates, provisioning profiles, API keys, or generated IPA files.
