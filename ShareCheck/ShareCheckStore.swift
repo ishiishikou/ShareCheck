@@ -36,7 +36,10 @@ final class ShareCheckStore: ObservableObject {
     func status(for id: String) -> MediaStatus { statuses[id] ?? .pending }
 
     func mark(sharedIds: [String], reviewedIds: [String]) {
-        latestOperation = MediaStatusStoreLogic.mark(statuses: &statuses, sharedIds: sharedIds, reviewedIds: reviewedIds)
+        guard let operation = MediaStatusStoreLogic.mark(statuses: &statuses, sharedIds: sharedIds, reviewedIds: reviewedIds) else {
+            return
+        }
+        latestOperation = operation
         persist()
     }
 
@@ -56,6 +59,8 @@ final class ShareCheckStore: ObservableObject {
 
     func removeStatuses(missingFrom existingIds: Set<String>) {
         let originalStatuses = statuses
+        let originalLatestOperation = latestOperation
+
         statuses = statuses.filter { existingIds.contains($0.key) }
 
         if let latestOperation {
@@ -65,7 +70,7 @@ final class ShareCheckStore: ObservableObject {
             self.latestOperation = prunedOperation.isEmpty ? nil : prunedOperation
         }
 
-        if statuses != originalStatuses {
+        if statuses != originalStatuses || latestOperation != originalLatestOperation {
             persist()
         }
     }

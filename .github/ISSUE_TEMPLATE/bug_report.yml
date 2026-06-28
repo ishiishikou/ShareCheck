@@ -1,0 +1,57 @@
+name: Bug report
+description: Report a reproducible problem in ShareCheck.
+title: "Bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not attach real personal photos, videos, credentials, device logs, or private Photo Library contents.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the smallest set of steps that reproduces the problem.
+      placeholder: |
+        1. Open ShareCheck
+        2. Go to ...
+        3. Tap ...
+        4. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: ios-version
+    attributes:
+      label: iOS version
+      placeholder: "Example: iOS 18.5"
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      placeholder: "Example: iPhone 16"
+  - type: checkboxes
+    id: privacy-check
+    attributes:
+      label: Privacy check
+      options:
+        - label: I have not included real personal photos, videos, credentials, device logs, or private Photo Library contents.
+          required: true

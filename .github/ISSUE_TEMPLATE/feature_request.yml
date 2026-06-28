@@ -1,0 +1,44 @@
+name: Feature request
+description: Propose a focused improvement for ShareCheck.
+title: "Feature: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ShareCheck is intentionally scoped as a local-first sharing-state tracker, not a full photo management app.
+        Before proposing a large feature, check docs/spec.md and docs/oss-publication-checklist.md.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the smallest useful version of the change.
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope fit
+      options:
+        - Directly reduces missed photo sharing
+        - Improves reliability or privacy
+        - Improves developer or repository maintenance
+        - Outside current MVP scope
+    validations:
+      required: true
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints acknowledged
+      options:
+        - label: This proposal does not require uploading photos or videos.
+          required: true
+        - label: This proposal does not require accounts, analytics, or backend storage.
+          required: true

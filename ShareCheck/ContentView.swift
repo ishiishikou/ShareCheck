@@ -191,7 +191,9 @@ struct PendingGridView: View {
                     confirmShared: !store.skipSharedConfirmation,
                     confirmReviewed: !store.skipReviewedConfirmation
                 ) { sharedIds, reviewedIds in
-                    store.mark(sharedIds: sharedIds, reviewedIds: reviewedIds)
+                    if !sharedIds.isEmpty || !reviewedIds.isEmpty {
+                        store.mark(sharedIds: sharedIds, reviewedIds: reviewedIds)
+                    }
                     clearSelectionState()
                     showPostShareConfirmation = false
                 }
@@ -212,6 +214,9 @@ struct PendingGridView: View {
                         description: Text("共有漏れはありません。")
                     )
                 }
+            }
+            .onDisappear {
+                cleanupShareItems()
             }
         }
     }
@@ -250,6 +255,7 @@ struct PendingGridView: View {
     }
 
     private func shareSelected() async {
+        cleanupShareItems()
         isPreparingShare = true
         defer { isPreparingShare = false }
 
@@ -261,6 +267,7 @@ struct PendingGridView: View {
 
         if shareItems.isEmpty {
             pendingSelectedIds.removeAll()
+            cleanupShareItems()
             return
         }
         showShareSheet = true
@@ -268,8 +275,9 @@ struct PendingGridView: View {
 
     private func handleShareSheetCompletion(completed: Bool) {
         showShareSheet = false
+        cleanupShareItems()
+
         guard completed else {
-            shareItems.removeAll()
             pendingSelectedIds.removeAll()
             return
         }
@@ -297,6 +305,14 @@ struct PendingGridView: View {
     private func clearSelectionState() {
         selectedIds.removeAll()
         pendingSelectedIds.removeAll()
+        cleanupShareItems()
+    }
+
+    private func cleanupShareItems() {
+        let urls = shareItems.compactMap { $0 as? URL }
+        for url in urls where url.isFileURL {
+            try? FileManager.default.removeItem(at: url)
+        }
         shareItems.removeAll()
     }
 }

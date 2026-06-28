@@ -13,7 +13,7 @@ struct MediaItem: Identifiable, Hashable {
     var creationDate: Date { asset.creationDate ?? .distantPast }
 }
 
-struct OperationSnapshot: Codable {
+struct OperationSnapshot: Codable, Equatable {
     var sharedIds: [String]
     var reviewedIds: [String]
     var createdAt: Date
