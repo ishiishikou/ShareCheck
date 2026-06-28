@@ -55,6 +55,7 @@ Recommended setting for a public repository:
 - Workflow permissions: read-only by default
 - Avoid automatic deploy or release workflows until credentials are reviewed
 - Keep release and TestFlight workflows manual-only unless automatic delivery is explicitly reviewed
+- Merge the TestFlight workflow into the default branch before expecting it to appear in the Actions UI
 
 ### 4. Review public-visible metadata
 
