@@ -1,0 +1,8 @@
+# Require owner review for workflow and release-sensitive configuration changes.
+# Branch protection must enable CODEOWNERS review for this file to take effect.
+
+.github/workflows/ @ishiishikou
+.github/CODEOWNERS @ishiishikou
+project.yml @ishiishikou
+ShareCheck/Info.plist @ishiishikou
+docs/testflight-github-actions.md @ishiishikou
