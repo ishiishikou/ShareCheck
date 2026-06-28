@@ -111,6 +111,10 @@ The workflow uses `app-store-connect` as the export method for current Xcode ver
 
 The workflow only uploads the build. TestFlight processing, compliance questions, tester groups, and external review remain App Store Connect tasks.
 
+## Pull request limitation
+
+Because this workflow is introduced in a pull request branch, it may not appear in the GitHub Actions UI until the PR is merged into the default branch. After merging, open the Actions tab and select `TestFlight Distribution`.
+
 ## Security notes
 
 - Do not commit certificates, provisioning profiles, API keys, or generated IPA files.
