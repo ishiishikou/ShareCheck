@@ -6,6 +6,7 @@ final class ShareCheckStore: ObservableObject {
     @Published var latestOperation: OperationSnapshot?
     @Published var skipSharedConfirmation: Bool
     @Published var skipReviewedConfirmation: Bool
+    @Published private(set) var managementStartDate: Date
 
     private let statusesKey = "mediaStatuses"
     private let startDateKey = "managementStartDate"
@@ -14,9 +15,14 @@ final class ShareCheckStore: ObservableObject {
     private let skipReviewedKey = "skipReviewedConfirmation"
 
     init() {
-        if UserDefaults.standard.object(forKey: startDateKey) == nil {
-            UserDefaults.standard.set(Date(), forKey: startDateKey)
+        if let storedStartDate = UserDefaults.standard.object(forKey: startDateKey) as? Date {
+            managementStartDate = storedStartDate
+        } else {
+            let initialStartDate = Date()
+            managementStartDate = initialStartDate
+            UserDefaults.standard.set(initialStartDate, forKey: startDateKey)
         }
+
         if let data = UserDefaults.standard.data(forKey: statusesKey), let decoded = try? JSONDecoder().decode([String: MediaStatus].self, from: data) {
             statuses = decoded
         }
@@ -27,7 +33,6 @@ final class ShareCheckStore: ObservableObject {
         skipReviewedConfirmation = UserDefaults.standard.bool(forKey: skipReviewedKey)
     }
 
-    var managementStartDate: Date { UserDefaults.standard.object(forKey: startDateKey) as? Date ?? Date() }
     func status(for id: String) -> MediaStatus { statuses[id] ?? .pending }
 
     func mark(sharedIds: [String], reviewedIds: [String]) {
@@ -42,10 +47,27 @@ final class ShareCheckStore: ObservableObject {
     }
 
     func resetManagementStartDate() {
-        UserDefaults.standard.set(Date(), forKey: startDateKey)
+        managementStartDate = Date()
+        UserDefaults.standard.set(managementStartDate, forKey: startDateKey)
         statuses.removeAll()
         latestOperation = nil
         persist()
+    }
+
+    func removeStatuses(missingFrom existingIds: Set<String>) {
+        let originalStatuses = statuses
+        statuses = statuses.filter { existingIds.contains($0.key) }
+
+        if let latestOperation {
+            let sharedIds = latestOperation.sharedIds.filter { existingIds.contains($0) }
+            let reviewedIds = latestOperation.reviewedIds.filter { existingIds.contains($0) }
+            let prunedOperation = OperationSnapshot(sharedIds: sharedIds, reviewedIds: reviewedIds, createdAt: latestOperation.createdAt)
+            self.latestOperation = prunedOperation.isEmpty ? nil : prunedOperation
+        }
+
+        if statuses != originalStatuses {
+            persist()
+        }
     }
 
     func setSkipSharedConfirmation(_ value: Bool) {
