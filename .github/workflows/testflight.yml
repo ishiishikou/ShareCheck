@@ -12,7 +12,7 @@ on:
         required: false
         default: ""
       bundle_id:
-        description: "Optional bundle ID override. Leave empty to use APP_BUNDLE_ID secret."
+        description: "Optional bundle ID override. Leave empty to use APP_BUNDLE_ID environment secret."
         required: false
         default: ""
 
@@ -28,6 +28,7 @@ jobs:
     name: Build and upload to TestFlight
     runs-on: macos-15
     timeout-minutes: 60
+    environment: testflight
 
     env:
       APP_NAME: ShareCheck
@@ -36,14 +37,6 @@ jobs:
       CONFIGURATION: Release
       MARKETING_VERSION: ${{ inputs.marketing_version }}
       BUILD_NUMBER: ${{ inputs.build_number != '' && inputs.build_number || github.run_number }}
-      BUNDLE_ID: ${{ inputs.bundle_id != '' && inputs.bundle_id || secrets.APP_BUNDLE_ID }}
-      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-      CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
-      CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-      PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-      ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-      ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-      ASC_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64 }}
 
     steps:
       - name: Checkout
@@ -53,8 +46,20 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode.app
 
       - name: Validate required configuration
+        env:
+          INPUT_BUNDLE_ID: ${{ inputs.bundle_id }}
+          SECRET_APP_BUNDLE_ID: ${{ secrets.APP_BUNDLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64 }}
         run: |
           set -euo pipefail
+
+          BUNDLE_ID="${INPUT_BUNDLE_ID:-$SECRET_APP_BUNDLE_ID}"
 
           missing=0
           for name in \
@@ -74,9 +79,16 @@ jobs:
           done
 
           if [ "$missing" -ne 0 ]; then
-            echo "Configure the required GitHub Actions secrets before running this workflow."
+            echo "Configure the required testflight environment secrets before running this workflow."
             exit 1
           fi
+
+          {
+            echo "BUNDLE_ID=$BUNDLE_ID"
+            echo "APPLE_TEAM_ID=$APPLE_TEAM_ID"
+            echo "ASC_KEY_ID=$ASC_KEY_ID"
+            echo "ASC_ISSUER_ID=$ASC_ISSUER_ID"
+          } >> "$GITHUB_ENV"
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -86,6 +98,9 @@ jobs:
 
       - name: Install signing certificate
         id: install_certificate
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
         run: |
           set -euo pipefail
 
@@ -122,6 +137,8 @@ jobs:
 
       - name: Install provisioning profile
         id: install_profile
+        env:
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: |
           set -euo pipefail
 
@@ -154,6 +171,8 @@ jobs:
           echo "profile_name=$PROFILE_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Create App Store Connect API key
+        env:
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64 }}
         run: |
           set -euo pipefail
 
@@ -258,7 +277,7 @@ jobs:
             security delete-keychain "${{ steps.install_certificate.outputs.keychain_path }}"
           fi
 
-          rm -f "$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+          rm -f "$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID:-}.p8"
           rm -f "$RUNNER_TEMP/distribution.p12"
           rm -f "$RUNNER_TEMP/profile.mobileprovision"
           rm -f "$RUNNER_TEMP/profile.plist"
