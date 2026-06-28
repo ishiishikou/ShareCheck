@@ -1,16 +1,19 @@
 # OSS Publication Checklist
 
-This checklist tracks the remaining tasks before making the repository public as an open-source project.
+This checklist tracks repository-publication readiness for ShareCheck.
 
-## Completed in this branch
+Current repository visibility: **public**.
+
+## Completed
 
 - [x] Add MIT License
 - [x] Expand README for OSS visibility
 - [x] Add contributing guide
 - [x] Add security policy
 - [x] Strengthen `.gitignore` for local files, secrets, signing assets, logs, and AI scratch files
+- [x] Add issue templates for bug reports and feature requests
 
-## Must complete before changing visibility to public
+## Still recommended after publication
 
 These checks require local Git or GitHub settings access and are not fully verifiable from repository files alone.
 
@@ -26,7 +29,7 @@ gitleaks detect --source . --log-opts="--all"
 trufflehog git file://. --only-verified
 ```
 
-Do not make the repository public until both checks are clean or every finding has been reviewed and remediated.
+If either scanner reports a real secret, rotate the secret first. Then remove or rewrite the exposed history as needed.
 
 ### 2. Check GitHub repository secrets
 
@@ -44,7 +47,7 @@ Remove unused secrets. Ensure no secret value is duplicated in workflow files, R
 gh api repos/ishiishikou/ShareCheck/actions/permissions
 ```
 
-Recommended setting before public release:
+Recommended setting for a public repository:
 
 - Workflow permissions: read-only by default
 - Avoid automatic deploy or release workflows until credentials are reviewed
@@ -52,7 +55,7 @@ Recommended setting before public release:
 
 ### 4. Review public-visible metadata
 
-Review the following before changing visibility:
+Review the following periodically:
 
 - Open pull requests
 - Branch names
@@ -73,10 +76,13 @@ Do not publish:
 - Device logs
 - Internal notes that were not intended for OSS publication
 
-## Optional after public release
+## Optional follow-up settings
+
+These require repository settings access and cannot be fully completed by file edits alone.
 
 - Add repository topics: `ios`, `swift`, `swiftui`, `photos`, `xcodegen`, `family`, `photo-library`
 - Add screenshots or a short demo GIF without personal photos
 - Enable private vulnerability reporting
 - Add branch protection for `main`
 - Enable Dependabot if package dependencies are added later
+- Configure GitHub Sponsors and add `.github/FUNDING.yml` after the sponsor account is confirmed
