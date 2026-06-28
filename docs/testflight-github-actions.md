@@ -8,6 +8,21 @@ Workflow file:
 
 The workflow is intentionally `workflow_dispatch` only. It does not run on every push or pull request because macOS minutes are limited and TestFlight uploads should be explicit.
 
+## Security model
+
+The workflow uses the `testflight` GitHub Actions environment.
+
+Configure the following environment protections before adding signing secrets.
+
+- Environment name: `testflight`
+- Required reviewers: enabled
+- Prevent self-review: enabled when available
+- Deployment branches: restrict to the default branch when available
+
+Secrets for signing and App Store Connect upload should be stored as `testflight` environment secrets, not broad repository secrets.
+
+The workflow also keeps secrets out of the job-level environment. Certificate, provisioning profile, and private key values are passed only to the steps that need them.
+
 ## Prerequisites
 
 Before running the workflow, prepare the following in Apple Developer and App Store Connect.
@@ -20,9 +35,9 @@ Before running the workflow, prepare the following in Apple Developer and App St
 - An App Store provisioning profile for the same Bundle ID
 - An App Store Connect API key with permission to upload builds
 
-## Required GitHub Actions secrets
+## Required GitHub Actions environment secrets
 
-Set the following repository secrets in GitHub.
+Set the following secrets on the `testflight` environment in GitHub.
 
 | Secret | Description |
 | --- | --- |
@@ -55,7 +70,7 @@ Encode the App Store Connect API private key:
 base64 -i AuthKey_XXXXXXXXXX.p8 | pbcopy
 ```
 
-Paste each copied value into the corresponding GitHub secret.
+Paste each copied value into the corresponding GitHub environment secret.
 
 ## Running the workflow
 
@@ -66,7 +81,8 @@ Paste each copied value into the corresponding GitHub secret.
    - `marketing_version`, for example `1.0`
    - `build_number`, or leave empty to use the GitHub Actions run number
    - `bundle_id`, or leave empty to use `APP_BUNDLE_ID`
-5. Run the workflow.
+5. Approve the `testflight` environment deployment if required.
+6. Run the workflow.
 
 ## What the workflow does
 
@@ -74,25 +90,30 @@ The workflow performs the following steps.
 
 1. Checks out the repository.
 2. Selects Xcode.
-3. Installs XcodeGen.
-4. Generates `ShareCheck.xcodeproj`.
-5. Imports the Apple Distribution certificate into a temporary keychain.
-6. Installs the provisioning profile.
-7. Creates the App Store Connect API key file under the runner home directory.
-8. Archives the app with manual signing.
-9. Exports an App Store Connect IPA.
-10. Uploads the IPA to TestFlight with `xcrun altool`.
-11. Deletes signing material from the runner.
+3. Validates required configuration and exposes only non-sensitive derived values to later steps.
+4. Installs XcodeGen.
+5. Generates `ShareCheck.xcodeproj`.
+6. Imports the Apple Distribution certificate into a temporary keychain.
+7. Installs the provisioning profile.
+8. Creates the App Store Connect API key file under the runner home directory.
+9. Archives the app with manual signing.
+10. Exports an App Store Connect IPA.
+11. Uploads the IPA to TestFlight with `xcrun altool`.
+12. Deletes signing material from the runner.
 
 The signed IPA is not uploaded as a GitHub artifact. This avoids exposing a signed app package from a public repository workflow run.
 
-The workflow only needs read-only repository contents permission. App Store Connect authentication is handled by the API key secret.
+The workflow only needs read-only repository contents permission. App Store Connect authentication is handled by the environment secrets.
 
 ## Common failure points
 
 ### Bundle ID is still `com.example.ShareCheck`
 
 Set `APP_BUNDLE_ID` to the real App Store Bundle ID, or provide `bundle_id` when running the workflow.
+
+### The workflow waits for approval
+
+The workflow references the `testflight` environment. If required reviewers are configured, the job will not receive environment secrets until the deployment is approved.
 
 ### Provisioning profile does not match the Team ID
 
@@ -120,7 +141,7 @@ Because this workflow is introduced in a pull request branch, it may not appear 
 
 ## Merge order
 
-For the first release setup, merge this workflow after the required GitHub Actions secrets and Apple Developer assets are ready. If the workflow is merged before the secrets are configured, it is still safe because it only runs manually and fails early when required values are missing.
+For the first release setup, merge this workflow after the required GitHub Actions environment secrets and Apple Developer assets are ready. If the workflow is merged before the secrets are configured, it is still safe because it only runs manually and fails early when required values are missing.
 
 ## Security notes
 
@@ -128,3 +149,4 @@ For the first release setup, merge this workflow after the required GitHub Actio
 - Keep this workflow manual-only unless release automation is explicitly reviewed.
 - Rotate App Store Connect API keys if a secret is suspected to have leaked.
 - Prefer a dedicated App Store Connect API key for CI instead of using a broad personal key.
+- Protect `.github/workflows/` and release configuration changes with review rules before relying on CI signing.
