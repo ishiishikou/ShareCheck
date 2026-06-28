@@ -15,6 +15,7 @@ Before running the workflow, prepare the following in Apple Developer and App St
 - A real App ID / Bundle ID for ShareCheck
   - The placeholder `com.example.ShareCheck` cannot be uploaded to TestFlight.
 - An App Store Connect app record for the Bundle ID
+  - The app record must exist before the first upload.
 - An Apple Distribution certificate exported as `.p12`
 - An App Store provisioning profile for the same Bundle ID
 - An App Store Connect API key with permission to upload builds
