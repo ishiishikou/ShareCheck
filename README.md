@@ -59,7 +59,7 @@ xcodebuild test -project ShareCheck.xcodeproj -scheme ShareCheck -destination 'p
 
 ## TestFlight distribution
 
-TestFlight delivery is available through a manual GitHub Actions workflow.
+TestFlight upload is available through a manual GitHub Actions workflow. TestFlight processing, compliance questions, tester groups, and external review remain App Store Connect tasks.
 
 See [docs/testflight-github-actions.md](docs/testflight-github-actions.md) for required Apple Developer assets, GitHub Actions secrets, and run instructions.
 
