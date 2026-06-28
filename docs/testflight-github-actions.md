@@ -107,6 +107,10 @@ Use a larger `build_number`, or leave it empty and let GitHub Actions use `githu
 
 The workflow uses `app-store-connect` as the export method for current Xcode versions. If an older Xcode image is used later and rejects this method, change it to `app-store` in `ExportOptions.plist` generation.
 
+### App Store Connect upload succeeds but TestFlight processing does not complete
+
+The workflow only uploads the build. TestFlight processing, compliance questions, tester groups, and external review remain App Store Connect tasks.
+
 ## Security notes
 
 - Do not commit certificates, provisioning profiles, API keys, or generated IPA files.
