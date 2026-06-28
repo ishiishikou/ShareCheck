@@ -12,6 +12,7 @@ Current repository visibility: **public**.
 - [x] Add security policy
 - [x] Strengthen `.gitignore` for local files, secrets, signing assets, logs, and AI scratch files
 - [x] Add issue templates for bug reports and feature requests
+- [x] Add manual TestFlight distribution workflow documentation
 
 ## Still recommended after publication
 
@@ -41,6 +42,8 @@ gh secret list -R ishiishikou/ShareCheck
 
 Remove unused secrets. Ensure no secret value is duplicated in workflow files, README, docs, issues, pull requests, or Actions logs.
 
+For TestFlight delivery, only store the signing and App Store Connect values as GitHub Actions secrets. Do not commit `.p12`, `.mobileprovision`, `.p8`, IPA, archive, or export output files.
+
 ### 3. Check Actions permissions
 
 ```bash
@@ -51,7 +54,7 @@ Recommended setting for a public repository:
 
 - Workflow permissions: read-only by default
 - Avoid automatic deploy or release workflows until credentials are reviewed
-- Keep manual `workflow_dispatch` if CI minutes are a concern
+- Keep release and TestFlight workflows manual-only unless automatic delivery is explicitly reviewed
 
 ### 4. Review public-visible metadata
 
