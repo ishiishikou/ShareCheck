@@ -1,8 +1,47 @@
+# Xcode
 DerivedData/
 build/
 *.xcworkspace
 *.xcodeproj/project.xcworkspace/xcuserdata/
 *.xcodeproj/xcuserdata/
 *.xcuserstate
+*.xcresult
+*.xcarchive
+*.ipa
+
+# Swift Package Manager
 .build/
+
+# macOS
 .DS_Store
+
+# Secrets / local environment
+.env
+.env.*
+*.env
+*.local
+*.log
+logs/
+
+# Apple signing / provisioning
+*.p12
+*.cer
+*.mobileprovision
+*.provisionprofile
+*.xcconfig
+
+# App Store Connect / Fastlane credentials and generated reports
+AuthKey_*.p8
+fastlane/.env
+fastlane/.env.*
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# AI / local handoff scratch files
+.codex/
+.claude/
+.ai/
+handoff/
+__should_not_commit__*
