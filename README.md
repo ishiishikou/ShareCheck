@@ -57,6 +57,12 @@ xcodebuild -project ShareCheck.xcodeproj -scheme ShareCheck -configuration Debug
 xcodebuild test -project ShareCheck.xcodeproj -scheme ShareCheck -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' CODE_SIGNING_ALLOWED=NO
 ```
 
+## TestFlight distribution
+
+TestFlight delivery is available through a manual GitHub Actions workflow.
+
+See [docs/testflight-github-actions.md](docs/testflight-github-actions.md) for required Apple Developer assets, GitHub Actions secrets, and run instructions.
+
 ## Repository policy
 
 - Work on feature branches.
