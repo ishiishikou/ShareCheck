@@ -86,6 +86,8 @@ The workflow performs the following steps.
 
 The signed IPA is not uploaded as a GitHub artifact. This avoids exposing a signed app package from a public repository workflow run.
 
+The workflow only needs read-only repository contents permission. App Store Connect authentication is handled by the API key secret.
+
 ## Common failure points
 
 ### Bundle ID is still `com.example.ShareCheck`
