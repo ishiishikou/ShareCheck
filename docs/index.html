@@ -933,6 +933,167 @@
     @keyframes fever-button { to { transform: scale(1.05) rotate(2deg); } }
     @keyframes fever-card { to { transform: rotate(-2deg) scale(1.02); } }
 
+
+    /* Keep the rapid-tap target under the user's finger when values change. */
+    .interactive-card > div:first-child { min-width: 0; }
+    .interactive-card h2 { min-height: 2.25em; }
+
+    [data-love-message] {
+      min-height: 3.7em;
+      max-width: 36em;
+    }
+
+    .love-count {
+      display: block;
+      width: 100%;
+      min-height: 1.1em;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: clip;
+      font-size: clamp(1.8rem, 7.5vw, 4.4rem);
+      line-height: 1.05;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .love-button,
+    .love-button:active,
+    body.is-fever .love-button {
+      transform: none !important;
+    }
+
+    .love-button:active { box-shadow: 10px 11px 0 var(--ink); }
+    body.is-fever .love-button { animation: none; }
+
+    .love-button::after {
+      content: "";
+      position: absolute;
+      inset: -12px;
+      border: 4px solid transparent;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    body.is-fever .love-button::after {
+      border-color: var(--yellow);
+      animation: fever-ring .65s ease-in-out infinite alternate;
+    }
+
+    .combo-panel { min-height: 188px; }
+
+    .combo-value {
+      display: block;
+      min-width: 8ch;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rank-line { min-height: 54px; }
+    [data-fever-hint] { display: block; min-height: 1.7em; }
+
+    .secret-vault {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 210px;
+      margin-top: 30px;
+      padding: 28px;
+      overflow: hidden;
+      border: 2px dashed var(--ink);
+      border-radius: 30px;
+      background: linear-gradient(135deg, rgba(216, 199, 255, .58), rgba(255, 213, 106, .5));
+      text-align: center;
+    }
+
+    .secret-vault::before {
+      content: "?";
+      position: absolute;
+      right: 18px;
+      bottom: -54px;
+      color: rgba(45, 31, 36, .08);
+      font-size: 12rem;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .secret-vault.is-unlocked {
+      border-style: solid;
+      background: linear-gradient(135deg, var(--purple), var(--yellow));
+      box-shadow: 8px 9px 0 var(--ink);
+    }
+
+    .secret-lock,
+    .secret-door-link {
+      position: relative;
+      z-index: 1;
+      max-width: 610px;
+    }
+
+    .secret-lock strong,
+    .secret-door-link strong {
+      display: block;
+      font-size: clamp(1.35rem, 4vw, 2.2rem);
+      line-height: 1.25;
+    }
+
+    .secret-lock p,
+    .secret-door-link p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .secret-door-link {
+      width: min(520px, 100%);
+      padding: 22px;
+      border: 3px solid var(--ink);
+      border-radius: 24px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, .84);
+      box-shadow: 7px 8px 0 var(--ink);
+      text-decoration: none;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .secret-door-link:hover,
+    .secret-door-link:focus-visible {
+      transform: translateY(-4px) rotate(-.5deg);
+    }
+
+    .secret-door-icon {
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 78px;
+      margin: 0 auto 15px;
+      border: 3px solid var(--ink);
+      border-radius: 26px 26px 7px 7px;
+      background: var(--coral);
+      box-shadow: inset -10px 0 rgba(255, 255, 255, .22), 4px 4px 0 var(--ink);
+      font-size: 1.4rem;
+    }
+
+    @keyframes fever-ring { to { inset: -22px; opacity: .12; } }
+
+    @media (max-width: 860px) {
+      .interactive-card {
+        grid-template-rows: minmax(235px, auto) 220px;
+        align-items: start;
+      }
+      .interactive-card > div:first-child { min-height: 235px; }
+      .love-button { align-self: start; }
+    }
+
+    @media (max-width: 560px) {
+      .interactive-card h2 { min-height: 3.2em; }
+      [data-love-message] { min-height: 5.2em; }
+      .interactive-card { grid-template-rows: 285px 220px; }
+      .interactive-card > div:first-child {
+        min-height: 285px;
+        overflow: hidden;
+      }
+      .secret-vault { padding: 22px 16px; }
+    }
+
     @media (max-width: 860px) {
       .hero { grid-template-columns: 1fr; min-height: auto; }
       .love-machine { min-height: 390px; }
@@ -1172,6 +1333,20 @@
           </article>
         </div>
 
+
+        <div class="secret-vault" data-secret-vault aria-live="polite">
+          <div class="secret-lock" data-secret-lock>
+            <span class="achievement-icon" aria-hidden="true">🔒</span>
+            <strong>実績の奥に、まだ何かあります。</strong>
+            <p>累計25タップで秘密の扉が開きます。</p>
+          </div>
+          <a class="secret-door-link" href="./chase-game.html" data-secret-link hidden>
+            <span class="secret-door-icon" aria-hidden="true">♥</span>
+            <strong>隠しコンテンツ：おうち追いかけっこ</strong>
+            <p>散らかった家の中で、成長していく子どもの背中をずっと追いかけるゲーム。</p>
+          </a>
+        </div>
+
         <div class="privacy-note">
           <span class="privacy-icon" aria-hidden="true">鍵</span>
           <div><strong>かわいさは全公開、個人情報は非公開。</strong><br>このページは子どもの写真・名前・年齢・居住地などを掲載していません。タップ回数や解除実績はブラウザ内だけに保存され、外部には送信されません。</div>
@@ -1196,6 +1371,7 @@
       'use strict';
 
       const storageKey = 'doting-parent-lab-v2';
+      const secretThreshold = 25;
       const initialState = { count: 9999, totalTaps: 0 };
       const messages = [
         'かわいさが規定値を超えました。',
@@ -1260,6 +1436,9 @@
       const alarmMessage = document.querySelector('[data-alarm-message]');
       const alarmClose = document.querySelector('[data-alarm-close]');
       const achievementCards = [...document.querySelectorAll('[data-achievement]')];
+      const secretVault = document.querySelector('[data-secret-vault]');
+      const secretLock = document.querySelector('[data-secret-lock]');
+      const secretLink = document.querySelector('[data-secret-link]');
 
       let state = loadState();
       let combo = 0;
@@ -1288,8 +1467,15 @@
         return ranks.reduce((current, item) => total >= item[0] ? item[1] : current, ranks[0][1]);
       }
 
+      function formatLoveCount(value) {
+        const number = Number(value);
+        if (number < 1000000) return number.toLocaleString('ja-JP');
+        return new Intl.NumberFormat('ja-JP', { notation: 'compact', maximumFractionDigits: 2 }).format(number);
+      }
+
       function renderPersistentState() {
-        countEl.textContent = Number(state.count).toLocaleString('ja-JP');
+        countEl.textContent = formatLoveCount(state.count);
+        countEl.title = Number(state.count).toLocaleString('ja-JP');
         totalTapsEl.textContent = Number(state.totalTaps).toLocaleString('ja-JP');
         rankEl.textContent = getRank(state.totalTaps);
         achievementCards.forEach((card) => {
@@ -1297,6 +1483,11 @@
           card.classList.toggle('is-locked', !unlocked);
           card.classList.toggle('is-unlocked', unlocked);
         });
+
+        const secretUnlocked = state.totalTaps >= secretThreshold;
+        secretVault.classList.toggle('is-unlocked', secretUnlocked);
+        secretLock.hidden = secretUnlocked;
+        secretLink.hidden = !secretUnlocked;
       }
 
       function showToast(html) {
@@ -1346,6 +1537,11 @@
           showToast(`<strong>実績解除！</strong><br>${threshold}タップ到達「${rank}」`);
           confettiStorm(24);
         });
+
+        if (previousTaps < secretThreshold && state.totalTaps >= secretThreshold) {
+          showToast('<strong>隠し扉が開きました。</strong><br>実績コレクションの奥を確認してください。');
+          confettiStorm(80);
+        }
       }
 
       function stopFever() {
@@ -1379,6 +1575,7 @@
       }
 
       function increaseLove(event) {
+        const anchorTop = event.currentTarget.getBoundingClientRect().top;
         const previousTaps = state.totalTaps;
         state.totalTaps += 1;
         state.count += 1111 + state.totalTaps * 37;
@@ -1392,6 +1589,12 @@
 
         const rect = event.currentTarget.getBoundingClientRect();
         releaseHeart(rect.left + rect.width / 2, rect.top + rect.height / 2, Math.min(4 + combo, 16));
+
+        window.requestAnimationFrame(() => {
+          const shiftedTop = event.currentTarget.getBoundingClientRect().top;
+          const delta = shiftedTop - anchorTop;
+          if (Math.abs(delta) > 0.5) window.scrollBy(0, delta);
+        });
       }
 
       function runDiagnosis() {
