@@ -45,7 +45,7 @@ jobs:
       SCHEME: ShareCheck
       PROJECT_PATH: ShareCheck.xcodeproj
       CONFIGURATION: Release
-      MARKETING_VERSION: ${{ inputs.marketing_version || '1.0' }}
+      MARKETING_VERSION: ${{ inputs.marketing_version || vars.TESTFLIGHT_MARKETING_VERSION || '1.0' }}
       BUILD_NUMBER: ${{ inputs.build_number || github.run_number }}
 
     steps:
