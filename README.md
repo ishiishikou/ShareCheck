@@ -59,9 +59,9 @@ xcodebuild test -project ShareCheck.xcodeproj -scheme ShareCheck -destination 'p
 
 ## TestFlight distribution
 
-TestFlight upload is available through a manual GitHub Actions workflow. TestFlight processing, compliance questions, tester groups, and external review remain App Store Connect tasks.
+Pull requests and pushes to `main` automatically build and test the iOS app. After a successful `main` push build, TestFlight upload runs automatically when the repository variable `TESTFLIGHT_AUTO_DEPLOY` is set to `true`. Manual TestFlight runs on `main` remain possible.
 
-See [docs/testflight-github-actions.md](docs/testflight-github-actions.md) for required Apple Developer assets, GitHub Actions secrets, and run instructions.
+Initial Apple signing/App Store Connect setup, TestFlight processing, compliance questions, and tester-group configuration remain separate tasks. See [docs/testflight-github-actions.md](docs/testflight-github-actions.md) for the automation gate, environment secrets, and release instructions.
 
 ## Repository policy
 
