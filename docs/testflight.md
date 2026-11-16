@@ -11,7 +11,7 @@
 | SKU | `sharecheck-ios` |
 | GitHub Environment | `testflight` |
 | 配信先 | TestFlight 内部テスト |
-| 実行方法 | GitHub Actions から手動実行 |
+| 実行方法 | main のCI成功後に自動（初期設定後に有効化）。mainからの手動実行も可能 |
 
 > `project.yml` には開発用のプレースホルダー Bundle ID が定義されています。TestFlight 用アーカイブでは、ワークフローが `APP_BUNDLE_ID` の値を `PRODUCT_BUNDLE_IDENTIFIER` に渡します。
 
@@ -21,8 +21,10 @@
 2. App Store Connect に ShareCheck のアプリを作成する。
 3. 配布用証明書、Provisioning Profile、App Store Connect API キーを準備する。
 4. GitHub の `testflight` Environment に Secrets を登録する。
-5. `TestFlight Distribution` ワークフローを手動実行する。
-6. App Store Connect でビルドの処理完了を確認し、内部テスターへ配信する。
+5. 初回の手動アップロードで署名・接続設定を検証する。
+6. リポジトリ変数 `TESTFLIGHT_AUTO_DEPLOY=true` を設定する。
+7. main への push 後の `iOS Build` 成功をトリガーに自動アップロードする。
+8. App Store Connect でビルドの処理完了を確認し、内部テスターへ配信する。
 
 すでに完了している項目は飛ばして構いません。
 
@@ -128,10 +130,22 @@ GitHub リポジトリの Settings から `testflight` Environment を作成し�
 
 ## 6. GitHub Actions を実行する
 
+### 自動実行（初期設定完了後）
+
+1. `testflight` EnvironmentのSecretsを設定し、Deployment branches を `main` に制限する。
+2. 完全自動配布にする場合は、Environment の Required reviewers を設定しない（設定すると承認待ちになる）。
+3. Repository Variables に `TESTFLIGHT_AUTO_DEPLOY` を `true` として登録する。
+4. 必要なら `TESTFLIGHT_MARKETING_VERSION`（例: `1.0`）も設定する。未設定時は `1.0`。
+5. PRからmainへマージすると `iOS Build` が自動実行され、成功した場合に限りTestFlightアップロードが起動する。失敗時は配布しない。
+
+`TESTFLIGHT_AUTO_DEPLOY` が未設定または `true` 以外の場合、自動配布のジョブはスキップされます。初期設定前の意図しないアップロードを防ぐためのゲートです。
+
+### 手動実行（初回設定検証・再配布）
+
 1. GitHub の Actions を開く。
 2. `TestFlight Distribution` を選択する。
 3. `Run workflow` を押す。
-4. 実行するブランチを選択する。
+4. `main` ブランチを選択する。
 5. 入力値を確認して実行する。
 
 入力項目:
@@ -167,9 +181,10 @@ GitHub リポジトリの Settings から `testflight` Environment を作成し�
 ## 再実行時のルール
 
 - 同じ marketing version を使う場合でも、build number は前回より大きい値にする。
-- `build_number` を空欄にすると、GitHub Actions の run number が使用される。
-- 修正後は同じワークフローを再度手動実行する。
-- push だけでは TestFlight 配信を開始しない。
+- `build_number` を空欄にすると、TestFlight Distribution ワークフローのrun numberが使用される。
+- 自動実行は `main` のCI成功と `TESTFLIGHT_AUTO_DEPLOY=true` が条件。CI失敗やPRだけでは配布しない。
+- 自動配布を一時停止する場合は `TESTFLIGHT_AUTO_DEPLOY=false` に戻す。
+- 自動アップロードはTestFlightへの一般公開やテスターグループへの登録を代行しない。
 
 ## トラブルシューティング
 
