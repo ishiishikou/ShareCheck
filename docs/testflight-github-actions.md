@@ -1,23 +1,23 @@
 # TestFlight GitHub Actions Setup
 
-This document explains how to configure the manual TestFlight distribution workflow.
+This document explains how to configure automatic TestFlight distribution after successful `main` CI, with an explicit opt-in gate and a manual fallback.
 
 Workflow file:
 
 - `.github/workflows/testflight.yml`
 
-The workflow is intentionally `workflow_dispatch` only. It does not run on every push or pull request because macOS minutes are limited and TestFlight uploads should be explicit.
+CI runs on pull requests and pushes to `main`. TestFlight distribution runs automatically only after a successful `main` push CI run, and only when the repository variable `TESTFLIGHT_AUTO_DEPLOY` equals `true`. The manual `workflow_dispatch` fallback is restricted to `main`. Public repositories can use standard GitHub-hosted macOS runners without compute charges; release signing still needs protection.
 
 ## Security model
 
 The workflow uses the `testflight` GitHub Actions environment.
 
-Configure the following environment protections before adding signing secrets.
+Configure the following environment protection before adding signing secrets.
 
 - Environment name: `testflight`
-- Required reviewers: enabled
-- Prevent self-review: enabled when available
-- Deployment branches: restrict to the default branch when available
+- Deployment branches: restrict to `main`
+- Required reviewers: **disabled for fully automatic delivery** (enabling them intentionally pauses every release for approval)
+- Protect `main` and `.github/workflows/` changes with PR reviews and checks before enabling automatic signing
 
 Secrets for signing and App Store Connect upload should be stored as `testflight` environment secrets, not broad repository secrets.
 
@@ -72,17 +72,22 @@ base64 -i AuthKey_XXXXXXXXXX.p8 | pbcopy
 
 Paste each copied value into the corresponding GitHub environment secret.
 
-## Running the workflow
+## Enable automatic delivery
 
-1. Open GitHub Actions.
-2. Select `TestFlight Distribution`.
-3. Click `Run workflow`.
-4. Enter:
-   - `marketing_version`, for example `1.0`
-   - `build_number`, or leave empty to use the GitHub Actions run number
-   - `bundle_id`, or leave empty to use `APP_BUNDLE_ID`
-5. Approve the `testflight` environment deployment if required.
-6. Run the workflow.
+1. Create the `testflight` environment with branch restrictions and configure all eight signing secrets.
+2. Make one manual release on `main` and confirm the IPA upload succeeds before enabling unattended releases.
+3. In **Settings → Secrets and variables → Actions → Variables**, set the repository variable `TESTFLIGHT_AUTO_DEPLOY` to `true`.
+4. Optionally set `TESTFLIGHT_MARKETING_VERSION` to the intended version (defaults to `1.0`). Update it before increasing the App Store Connect marketing version.
+5. Merge a PR to `main`. The `iOS Build` workflow runs on the `main` push. If it succeeds, `TestFlight Distribution` checks out **that exact tested commit** and uploads automatically.
+
+To pause automatic releases without changing source, change `TESTFLIGHT_AUTO_DEPLOY` to `false` or delete that variable. Missing/false values skip the release job. CI continues to run.
+
+## Manual fallback
+
+1. Open GitHub Actions and select `TestFlight Distribution`.
+2. Click `Run workflow` and select **`main`**.
+3. Enter the `marketing_version`, optional `build_number` (defaults to this workflow's run number), and optional `bundle_id` (defaults to `APP_BUNDLE_ID`).
+4. Run the workflow. Manual runs remain available when `TESTFLIGHT_AUTO_DEPLOY` is disabled; an environment with required reviewers still requires approval.
 
 ## What the workflow does
 
@@ -103,7 +108,7 @@ The workflow performs the following steps.
 
 The signed IPA is not uploaded as a GitHub artifact. This avoids exposing a signed app package from a public repository workflow run.
 
-The workflow only needs read-only repository contents permission. App Store Connect authentication is handled by the environment secrets.
+The workflow only needs read-only repository contents permission. App Store Connect authentication is handled by the environment secrets. Automatic delivery uses `workflow_run` only for successful push-based `iOS Build` runs on `main`, never for a PR result; it does not download CI artifacts or execute PR-provided scripts.
 
 ## Common failure points
 
@@ -113,7 +118,7 @@ Set `APP_BUNDLE_ID` to the real App Store Bundle ID, or provide `bundle_id` when
 
 ### The workflow waits for approval
 
-The workflow references the `testflight` environment. If required reviewers are configured, the job will not receive environment secrets until the deployment is approved.
+The workflow references the `testflight` environment. If required reviewers are configured, every release waits for deployment approval. Disable this rule only after the `main` branch and release-workflow files are appropriately protected and unattended delivery is desired.
 
 ### Provisioning profile does not match the Team ID
 
@@ -137,16 +142,16 @@ The workflow only uploads the build. TestFlight processing, compliance questions
 
 ## Pull request limitation
 
-Because this workflow is introduced in a pull request branch, it may not appear in the GitHub Actions UI until the PR is merged into the default branch. After merging, open the Actions tab and select `TestFlight Distribution`.
+The `workflow_run` trigger only becomes active when this workflow file exists on the default branch. PR builds never receive TestFlight signing secrets. Merging the automation PR is not sufficient to enable automatic delivery: `TESTFLIGHT_AUTO_DEPLOY=true` must also be configured.
 
 ## Merge order
 
-For the first release setup, merge this workflow after the required GitHub Actions environment secrets and Apple Developer assets are ready. If the workflow is merged before the secrets are configured, it is still safe because it only runs manually and fails early when required values are missing.
+The automation PR may be merged before Apple signing assets are prepared because `TESTFLIGHT_AUTO_DEPLOY` defaults to disabled. Configure secrets and verify a manual release before enabling the repository variable. A successful automatic workflow upload does not prove TestFlight processing or tester distribution completed.
 
 ## Security notes
 
 - Do not commit certificates, provisioning profiles, API keys, or generated IPA files.
-- Keep this workflow manual-only unless release automation is explicitly reviewed.
+- Keep `TESTFLIGHT_AUTO_DEPLOY` disabled until initial manual upload and release permissions have been verified.
 - Rotate App Store Connect API keys if a secret is suspected to have leaked.
 - Prefer a dedicated App Store Connect API key for CI instead of using a broad personal key.
 - Protect `.github/workflows/` and release configuration changes with review rules before relying on CI signing.
